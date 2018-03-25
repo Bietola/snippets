@@ -1,0 +1,4 @@
+time: 32:12
+title: Abusing Deduction Guides
+description: Abuses std::function deduction guide to infer function type information
+			 (kind of implements subset of static reflection on functions).
