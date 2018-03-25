@@ -1,28 +1,30 @@
 #include <iostream>
+#include <functional>
 #include <tuple>
 
-template <typename Function, typename... Params,
+template <typename Function,
+          typename... Params,
           size_t... I>
-void dispatch_params(Function func,
-                     const std::tuple<Params...>& params,
-                     std::index_sequence<I...>) {
+void dispatch_params_impl(const Function& func,
+                          const std::tuple<Params...>& params,
+                          const std::index_sequence<I...>) {
     func(std::get<I>(params)...);
 }
 
-template <typename Function, typename... Params>
-void dispatch_params(Function func,
+template <typename Function,
+          typename... Params>
+void dispatch_params(const Function& func,
                      const std::tuple<Params...>& params) {
-    dispatch_params(func, params, std::make_index_sequence<sizeof...(Params)>());
+    dispatch_params_impl(func, params,
+                         std::make_index_sequence<sizeof...(Params)>());
 }
 
-template <typename... Ints>
-void print_ints(Ints... ints) {
-    std::cout << "Here's your ints, sir/ma'am: ";
-    (std::cout << ints... << ", ");
+int do_thing(const std::string& thing) {
+    std::cout << "I've done the " << thing << " sir/ma'am!";
 }
 
 int main() {
-    auto tpl = std::make_tuple(1, 3, 24);
+    dispatch_params(&do_thing, std::make_tuple(std::string("bath")));
 
     return 0;
 }
