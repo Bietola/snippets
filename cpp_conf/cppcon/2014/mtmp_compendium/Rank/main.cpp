@@ -12,6 +12,11 @@ struct rank<T[S]> {
 };
 
 template <typename T>
+struct rank<T[]> {
+    static constexpr const size_t value = 1 + rank<T>::value;
+};
+
+template <typename T>
 static constexpr const size_t rank_v = rank<T>::value;
 
 int main() {
