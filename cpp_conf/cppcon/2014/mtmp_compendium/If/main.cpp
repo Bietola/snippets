@@ -5,18 +5,19 @@ struct type_is {
     using type = T;
 };
 
-template <bool, typename T, typename>
-struct IF : type_is<T> {};
+template <bool, typename T, typename F>
+struct IF : type_is<F> {};
 
 template <typename T, typename F>
-struct IF<false, T, F> : type_is<F> {};
+struct IF<true, T, F> : type_is<T> {};
 
-template <bool Cond, typename Ttrue, typename Tfalse>
-using IF_t = typename IF<Cond, Ttrue, Tfalse>::type;
+template <bool C, typename T, typename F>
+using IF_t = typename IF<C, T, F>::type;
 
 int main() {
-    std::cout <<
-        IF_t<true, int, double>(1.1) << std::endl;
+    IF_t<true, int, float> x = 1.1;
+
+    std::cout << x << std::endl;
 
     return 0;
 }
