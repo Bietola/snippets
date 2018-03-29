@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/dincio/code/snippets/effective_c++/item15/ref/build",
+  "command": "/usr/bin/c++      -std=gnu++1z -o CMakeFiles/Proj.dir/main.cpp.o -c /home/dincio/code/snippets/effective_c++/item15/ref/main.cpp",
+  "file": "/home/dincio/code/snippets/effective_c++/item15/ref/main.cpp"
+}
+]
