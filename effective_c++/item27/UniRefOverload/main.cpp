@@ -2,15 +2,17 @@
 #include <vector>
 #include <string>
 
+#include "metautils.h"
+
 class Person {
     private:
         std::string mName;
         size_t mId = 0;
 
     public:
-        explicit Person(const std::string& name, size_t id):
-            mName(name),
-            mId(id){}; 
+        explicit Person(size_t id, std::string name):
+            mId(id),
+            mName(std::move(name)){}; 
         Person(const Person& cp): mName(cp.mName) {
             std::cout << "Person(Person const&)\n";
         }
@@ -23,15 +25,20 @@ class Person {
 
 std::vector<Person> gNames;
 
-template <typename Name, typename... Args>
-void subscribe(Name&& name, Args&&... args) {
+template <typename... Args>
+void subscribe_impl(const std::tuple<Args...>& args) {
+    auto name = find_tuple_type_t<std::string>(args);
     std::cout << "registered " << name << '\n';
-    gNames.emplace_back(std::forward<Name>(name),
-                        std::forward<Args>(args)...);
+    gNames.emplace_back(std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+void subscribe(Args&&... args) {
+    subscribe_impl(std::make_tuple(std::forward<Args>(args)...));
 }
 
 int main() {
-    subscribe("Bob", 1);
+    subscribe(std::string("Bob"), 1);
 
     return 0;
 }
