@@ -5,7 +5,7 @@
 #include "utils.h"
 
 struct Interface :
-    public utl::clonable<Interface> {
+    public utl::clonable<Interface, std::unique_ptr> {
 
     std::string mAdjective;
 
@@ -15,7 +15,7 @@ struct Interface :
 };
 
 struct Implementation :
-    public utl::clonable_impl<Interface, Implementation> {
+    public utl::clonable_impl<Interface, Implementation, std::unique_ptr> {
 
     std::string greet(const std::string& str) const override { return "hello " + str + "!!!"; }
 };

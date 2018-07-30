@@ -15,13 +15,17 @@ auto make_raw(Args&&... args) {
 
 // CRTP interface for implmenting the protorype pattern
 template <class BaseClass,
-          template <class T, class Deleter> class PtrType = raw_ptr,
+          template <class, class> class PtrType = raw_ptr,
           class Deleter = std::default_delete<BaseClass>>
 class clonable {
     public:
         using BasePtr = PtrType<BaseClass, Deleter>;
 
-        virtual BasePtr clone() const noexcept = 0;
+    private:
+        virtual BaseClass* clone_impl() const noexcept = 0;
+
+    public:
+        BasePtr clone() const noexcept { return BasePtr(clone_impl(), Deleter());}
 
         template <class ChildClass, class... Args>
         static BasePtr make(Args&&... args) noexcept { 
@@ -30,14 +34,17 @@ class clonable {
 };
 
 template <class BaseClass, class ChildClass,
-          template <class T, class Deleter> class PtrType = raw_ptr,
+          template <class, class> class PtrType = raw_ptr,
           class Deleter = std::default_delete<ChildClass>>
 class clonable_impl: public BaseClass {
     public:
         using ChildPtr = PtrType<ChildClass, Deleter>;
 
-        ChildPtr clone() const noexcept override {
-            return Ptr(new ChildClass(*this), Deleter());
+        clonable_impl* clone_impl() const noexcept override {
+            return new ChildClass(*this);
+        }
+        ChildPtr clone() const noexcept {
+            return Ptr(static_cast<ChildClass*>(clone_impl()), Deleter());
         }
 };
 
