@@ -1,31 +1,28 @@
 # initialize project
-cmake_minimum_required(VERSION 3.9.0)
-project(Proj)
-
-# compiler flags
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# export compile commands for YCM
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+cmake_minimum_required(VERSION 3.5)
+project(Proj VERSION 1.0.0 LANGUAGES CXX)
 
 # load packages
-# ! no packages for now
+#TODO: no packages for now
 
-# packages include directories
-# ! no packages for now
+# create target executable
+add_executable(Proj src/main.cpp)
 
-# project directories
-include_directories(headers)
+# include directories
+target_include_directories(Proj
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
-# project sources
-file(GLOB SRC src/**.cpp)
+# compiler properties
+target_compile_options(Proj PRIVATE -Werror)
+target_compile_features(Proj PRIVATE cxx_std_17)
 
-# create exectuables
-add_executable(Proj ${SRC}) 
+# export compilation database for YCM
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# packages linked libraries
-# ! no packages for now
+# link libraries
+#TODO: no libraries for now
 
 # copy resources from resource directories into build directory
 set(source "${CMAKE_SOURCE_DIR}/assets")
@@ -34,15 +31,15 @@ add_custom_command(
     TARGET Proj POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E create_symlink ${source} ${destination} 
     DEPENDS ${destination}
-	COMMENT "Created symbolic link to assets folder at ${source} to ${destination}"
+    COMMENT "Created symbolic link to assets folder at ${source} to ${destination}"
 )
 
-# copy compile commands into root directory for YCM
+# copy compile commands into root directory
 set(source "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
 set(destination "${CMAKE_SOURCE_DIR}/")
 add_custom_command(
-	TARGET Proj POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy ${source} ${destination}
-	DEPENDS ${destination}
-	COMMENT "Copied compilation database from ${source} to ${destination}"
+    TARGET Proj POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${source} ${destination}
+    DEPENDS ${destination}
+    COMMENT "Copied compilation database from ${source} to ${destination}"
 )

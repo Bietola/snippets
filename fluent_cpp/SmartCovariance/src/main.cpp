@@ -2,29 +2,30 @@
 #include <string>
 #include <memory>
 
-struct Interface {
-    template <class T> using Ptr = std::unique_ptr<T>;
+#include "utils.h"
+
+struct Interface :
+    public utl::clonable<Interface> {
 
     std::string mAdjective;
 
     void setAdjective(const std::string& adj) { mAdjective = adj; }
 
     virtual std::string greet(const std::string&) const = 0;
-    virtual Interface* clone() const = 0;
 };
 
-struct Implementation : public Interface {
-    std::string greet(const std::string& str) const override { return "hello " + str + "!!!"; }
+struct Implementation :
+    public utl::clonable_impl<Interface, Implementation> {
 
-    Implementation* clone() const override { return new Implementation(*this); }
+    std::string greet(const std::string& str) const override { return "hello " + str + "!!!"; }
 };
 
 int main() {
-    Interface* greeter = new Implementation;
+    auto greeter = Interface::make<Implementation>();
     std::cout << "test1" << std::endl;
     std::cout << greeter->greet("world") << std::endl << std::endl;
 
-    Interface* greeter2 = greeter->clone();
+    auto greeter2 = greeter->clone();
     greeter2->setAdjective("cruel");
     std::cout << "test2" << std::endl;
     std::cout << greeter ->greet("world") << std::endl;
