@@ -3,7 +3,7 @@
 #include "utils.h"
 
 class Greeter :
-    public clonable<Greeter> 
+    public utl::clonable<Greeter>
 {
     public:
         virtual ~Greeter() {
@@ -14,21 +14,18 @@ class Greeter :
 };
 
 class WorldGreeter :
-    public Greeter
+    public utl::clone_inherit<Greeter, WorldGreeter>
 {
     public:
         std::string greet() const override { return "hello world!"; }
 };
 
 int main() {
-    Greeter* greeter1  = new WorldGreeter;
-    Greeter* greeter2 = greeter1->clone();
+    std::unique_ptr<Greeter> greeter1 = std::make_unique<WorldGreeter>();
+    auto greeter2 = greeter1->clone();
 
     std::cout << greeter1->greet() << "\n";
     std::cout << greeter2->greet() << "\n";
-
-    delete greeter1;
-    delete greeter2;
 
     return 0;
 }
