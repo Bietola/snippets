@@ -26,17 +26,30 @@ auto make_raw(Args&&... args) {
 }
 
 // CRTP for prototype interface
-template <class Base>
+template <class Base,
+          template <class, class> class _Ptr = raw_ptr,
+          template <class> class _Deleter = std::default_delete>
 class cloneable {
+    public:
+        template <class T1, class T2>
+        using Ptr = _Ptr<T1, T2>;
+
+        template <class T>
+        using Deleter = _Deleter<T>;
+
     protected:
         virtual Base* clone_impl() const = 0;
 };
 
-template <class Derived, class Base,
-          template <class, class> class Ptr = raw_ptr,
-          template <class> class Deleter = std::default_delete>
+template <class Derived, class Base>
 class clone_inherit : public Base {
     public:
+        template <class T1, class T2> 
+        using Ptr = class Base::Ptr<T1, T2>;
+
+        template <class T>
+        using Deleter = class Base::Deleter<T>;
+
         using DerivedPtr = Ptr<Derived, Deleter<Derived>>;
     
     private:
