@@ -9,13 +9,6 @@ std::string greet(const std::string& toGreet) {
     return "hello " + toGreet + "!!!";
 }
 
-// type wrapper for TMP 
-template <class T>
-class type_wrapper {
-    public:
-        using type = T;
-};
-
 // smart pointer interface for raw pointers 
 template <class T, class Deleter = void>
 using raw_ptr = T*;
@@ -36,6 +29,10 @@ class cloneable {
 
         template <class T>
         using Deleter = _Deleter<T>;
+
+        using BasePtr = Ptr<Base, Deleter<Base>>;
+
+        BasePtr clone() const { return BasePtr(clone_impl(), Deleter<Base>()); }
 
     protected:
         virtual Base* clone_impl() const = 0;
