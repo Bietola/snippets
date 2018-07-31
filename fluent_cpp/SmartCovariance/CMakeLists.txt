@@ -36,10 +36,10 @@ add_custom_command(
 
 # copy compile commands into root directory
 set(source "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
-set(destination "${CMAKE_SOURCE_DIR}/")
+set(destination "${CMAKE_SOURCE_DIR}/compile_commands.json")
 add_custom_command(
     TARGET Proj POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${source} ${destination}
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${source} ${destination}
     DEPENDS ${destination}
     COMMENT "Copied compilation database from ${source} to ${destination}"
 )

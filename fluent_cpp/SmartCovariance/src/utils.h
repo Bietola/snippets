@@ -4,6 +4,18 @@
 
 namespace utl {
 
+// test function
+std::string greet(const std::string& toGreet) {
+    return "hello " + toGreet + "!!!";
+}
+
+// type wrapper for TMP 
+template <class T>
+class type_wrapper {
+    public:
+        using type = T;
+};
+
 // smart pointer interface for raw pointers 
 template <class T, class Deleter = void>
 using raw_ptr = T*;
@@ -13,39 +25,27 @@ auto make_raw(Args&&... args) {
     return new Type(args...);
 }
 
-// CRTP interface for implmenting the protorype pattern
-template <class BaseClass,
-          template <class, class> class PtrType = raw_ptr,
-          class Deleter = std::default_delete<BaseClass>>
-class clonable {
-    public:
-        using BasePtr = PtrType<BaseClass, Deleter>;
+// CRTP for prototype interface
+template <class Base>
+class cloneable {
+    protected:
+        virtual Base* clone_impl() const = 0;
+};
 
+template <class Derived, class Base,
+          template <class, class> class Ptr = raw_ptr,
+          template <class> class Deleter = std::default_delete>
+class clone_inherit : public Base {
+    public:
+        using DerivedPtr = Ptr<Derived, Deleter<Derived>>;
+    
     private:
-        virtual BaseClass* clone_impl() const noexcept = 0;
+        Base* clone_impl() const { return new Derived(static_cast<const Derived&>(*this)); }
 
     public:
-        BasePtr clone() const noexcept { return BasePtr(clone_impl(), Deleter());}
-
-        template <class ChildClass, class... Args>
-        static BasePtr make(Args&&... args) noexcept { 
-            return BasePtr(new ChildClass(std::forward<Args>(args)...), Deleter());
+        DerivedPtr clone() const {
+            return DerivedPtr(static_cast<Derived*>(clone_impl()), Deleter<Derived>()); 
         }
 };
 
-template <class BaseClass, class ChildClass,
-          template <class, class> class PtrType = raw_ptr,
-          class Deleter = std::default_delete<ChildClass>>
-class clonable_impl: public BaseClass {
-    public:
-        using ChildPtr = PtrType<ChildClass, Deleter>;
-
-        clonable_impl* clone_impl() const noexcept override {
-            return new ChildClass(*this);
-        }
-        ChildPtr clone() const noexcept {
-            return Ptr(static_cast<ChildClass*>(clone_impl()), Deleter());
-        }
-};
-
-};
+}

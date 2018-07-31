@@ -1,7 +1,1 @@
-[
-{
-  "directory": "/home/dincio/code/snippets/fluent_cpp/SmartCovariance/build",
-  "command": "/usr/bin/c++   -I/home/dincio/code/snippets/fluent_cpp/SmartCovariance/src    -Werror -std=gnu++1z -o CMakeFiles/Proj.dir/src/main.cpp.o -c /home/dincio/code/snippets/fluent_cpp/SmartCovariance/src/main.cpp",
-  "file": "/home/dincio/code/snippets/fluent_cpp/SmartCovariance/src/main.cpp"
-}
-]
+/home/dincio/code/snippets/fluent_cpp/SmartCovariance/build/compile_commands.json

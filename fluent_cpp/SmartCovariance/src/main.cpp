@@ -1,35 +1,60 @@
 #include <iostream>
-#include <string>
-#include <memory>
 
 #include "utils.h"
 
-struct Interface :
-    public utl::clonable<Interface, std::unique_ptr> {
+class Greeter : public utl::cloneable<Greeter> {
+    public:
+        template <class Derived> 
+        struct Deleter {
+            void operator()(Derived* ptr) {
+                std::cout << "deleted something unique (" << typeid(ptr).name() << ")" << std::endl;
+                delete ptr;
+            }
+        };
 
-    std::string mAdjective;
+    protected:
+        std::string mAdjective;
 
-    void setAdjective(const std::string& adj) { mAdjective = adj; }
+    public:
+        virtual ~Greeter() {
+            std::cout << "deleted something (" << typeid(this).name() << ")"
+                      << " [" << this << "]" << std::endl;
+        }
 
-    virtual std::string greet(const std::string&) const = 0;
+        void setAdjective(const std::string& adj) { mAdjective = adj; }
+
+        virtual std::string greet(const std::string&) const = 0;
 };
 
-struct Implementation :
-    public utl::clonable_impl<Interface, Implementation, std::unique_ptr> {
 
-    std::string greet(const std::string& str) const override { return "hello " + str + "!!!"; }
+template <class Derived> 
+using GreeterImpl = utl::clone_inherit<
+    Derived, Greeter, std::unique_ptr, Greeter::Deleter
+>;
+
+class WorldGreeter : public GreeterImpl<WorldGreeter> {
+    public:
+        std::string greet(const std::string& toGreet) const override {
+            return "hello " + mAdjective + " " + toGreet + "!!!";
+        }
+};
+
+class GrumpyGreeter : public GreeterImpl<GrumpyGreeter> {
+    public: 
+        std::string greet(const std::string& toGreet) const override {
+            return "hello " + mAdjective + " " + toGreet + "...";
+        }
 };
 
 int main() {
-    auto greeter = Interface::make<Implementation>();
-    std::cout << "test1" << std::endl;
-    std::cout << greeter->greet("world") << std::endl << std::endl;
+    auto greeter1 = std::make_unique<WorldGreeter>();
+    greeter1->setAdjective("cruel");
 
-    auto greeter2 = greeter->clone();
-    greeter2->setAdjective("cruel");
-    std::cout << "test2" << std::endl;
-    std::cout << greeter ->greet("world") << std::endl;
-    std::cout << greeter2->greet("world") << std::endl;
+    auto greeter2 = greeter1->clone();
+    greeter2->setAdjective("beautiful");
+
+    std::cout << "1: " << greeter1->greet("world") << "\n";
+    std::cout << "2: " << greeter2->greet("world") << "\n";
 
     return 0;
 }
