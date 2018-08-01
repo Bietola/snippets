@@ -1,7 +1,7 @@
 [
 {
-  "directory": "/home/dincio/code/snippets/boost/hana/BaseStore/build",
-  "command": "/usr/bin/c++   -I/home/dincio/code/snippets/boost/hana/BaseStore/src    -Werror -std=gnu++1z -o CMakeFiles/Proj.dir/src/main.cpp.o -c /home/dincio/code/snippets/boost/hana/BaseStore/src/main.cpp",
-  "file": "/home/dincio/code/snippets/boost/hana/BaseStore/src/main.cpp"
+  "directory": "/home/dincio/code/snippets/boost/hana/Clonable/build",
+  "command": "/usr/bin/c++   -I/home/dincio/code/snippets/boost/hana/Clonable/src    -Werror -std=gnu++1z -o CMakeFiles/Proj.dir/src/main.cpp.o -c /home/dincio/code/snippets/boost/hana/Clonable/src/main.cpp",
+  "file": "/home/dincio/code/snippets/boost/hana/Clonable/src/main.cpp"
 }
 ]
