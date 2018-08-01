@@ -14,14 +14,13 @@ template <class Base,
           template <class> class _Deleter>
 class clonable {
     public:
-        template <class T, template <class> class D>
-        using Ptr = type_wrapper<_Ptr<T, D<T>>>;
-
+        template <class T, class D>
+        using Ptr = _Ptr<T, D>;
         template <class T>
-        using Deleter = type_wrapper<_Deleter<T>>;
+        using Deleter = _Deleter<T>;
 
-        using BasePtr     = _Ptr<Base, _Deleter<Base>>;
-        using BaseDeleter = _Deleter<Base>;
+        using BasePtr     = Ptr<Base, Deleter<Base>>;
+        using BaseDeleter = Deleter<Base>;
 
     protected:
         virtual Base* clone_impl() const noexcept = 0;
@@ -34,13 +33,12 @@ template <class Base, class Derived>
 class clone_inherit : public Base {
     public:
         template <class T, class D>
-        using _Ptr = class Base::template Ptr<T, D>::type;
-
+        using Ptr = Base::Ptr<T, D>;
         template <class T>
-        using _Deleter = class Base::template Deleter<T>::type;
+        using Deleter = Base::Deleter<T>;
 
-        using DerivedPtr     = _Ptr<Derived, _Deleter<Derived>>;
-        using DerivedDeleter = _Deleter<Derived>;
+        using DerivedPtr     = Ptr<Derived, Deleter<Derived>>;
+        using DerivedDeleter = Deleter<Derived>;
 
     private:
         Base* clone_impl() const noexcept override { 
