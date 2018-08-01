@@ -12,23 +12,21 @@ template <class Base,
           template <class> class _Deleter = std::default_delete>
 class clonable {
     public:
-        template <class T, class D> 
-        using Ptr = _Ptr<T, D>;
-        template <class T>
-        using Deleter = _Deleter<T>;
+        template <class... Args> 
+        using Ptr = _Ptr<Args...>;
 
-        using BaseDeleter = Deleter<Base>;
-        using BasePtr     = Ptr<Base, BaseDeleter>;
+        template <class... Args>
+        using BasePtr = Ptr<Base, Args...>;
 
     private:
         virtual Base* clone_impl() const noexcept = 0;
 
     public:
-        template <class Derived, class... Args>
-        static Ptr<Derived, Deleter<Derived>> make_ptr(Args&&... args) {
-            return Ptr<Derived, Deleter<Derived>>(
+        template <class Derived, class... PtrArgs, class... Args>
+        static Ptr<Derived, PtrArgs...> make_ptr(Args&&... args) {
+            return Ptr<Derived, PtrArgs...>(
                 new Derived(std::forward(args)...),
-                Deleter<Derived>()
+                PtrArgs()...
             );
         }
 
