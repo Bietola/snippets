@@ -15,8 +15,3 @@ function Account:withdraw(q)
         self.deposit = new
     end
 end
-
-account = Account:new{deposit = 100}
-account:withdraw(90)
-account:withdraw(11)
-account.deposit
