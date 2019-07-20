@@ -1,13 +1,19 @@
+macro_rules! list {
+    () => { Nil };
+    ( $head:expr, $($tail:expr),+ ) => { Cons($head, Box::new(list!($($tail),*))) };
+    ( $head:expr ) => { Cons( $head, Box::new(Nil) ) };
+}
+
 #[derive(Debug)]
-enum List {
-    Cons(i32, Box<List>),
+enum List<T> {
+    Cons(T, Box<List<T>>),
     Nil,
 }
 
 fn main() {
     use List::{Cons, Nil};
 
-    let list: List = Cons(1, Box::new(Cons(2, Box::new(Nil))));
+    let list = list![1, 2, 3];
 
     println!("{:?}", list);
 }
