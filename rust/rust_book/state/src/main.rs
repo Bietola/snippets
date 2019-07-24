@@ -1,7 +1,8 @@
 trait State: std::fmt::Debug {
     fn request_review(self: Box<Self>) -> Box<dyn State>; 
-
     fn approve(self: Box<Self>) -> Box<dyn State>;
+    fn reject(self: Box<Self>) -> Box<dyn State>;
+    fn get_contents<'a>(&self, post: &'a Post) -> &'a str;
 }
 
 #[derive(Debug)]
@@ -10,9 +11,14 @@ impl State for Draft {
     fn request_review(self: Box<Self>) -> Box<dyn State> {
         Box::new(Review {})
     }
-    
     fn approve(self: Box<Self>) -> Box<dyn State> {
         self
+    }
+    fn reject(self: Box<Self>) -> Box<dyn State> {
+        self
+    }
+    fn get_contents<'a>(&self, post: &'a Post) -> &'a str {
+        ""
     }
 }
 
@@ -25,6 +31,12 @@ impl State for Review {
     fn approve(self: Box<Self>) -> Box<dyn State> {
         Box::new(Published {})
     }
+    fn reject(self: Box<Self>) -> Box<dyn State> {
+        Box::new(Draft {})
+    }
+    fn get_contents<'a>(&self, post: &'a Post) -> &'a str {
+        ""
+    }
 }
 
 #[derive(Debug)]
@@ -35,6 +47,12 @@ impl State for Published {
     }
     fn approve(self: Box<Self>) -> Box<dyn State> {
         self
+    }
+    fn reject(self: Box<Self>) -> Box<dyn State> {
+        Box::new(Draft {})
+    }
+    fn get_contents<'a>(&self, post: &'a Post) -> &'a str {
+        &post.contents
     }
 }
 
@@ -67,17 +85,30 @@ impl Post {
             self.state = Some(s.approve());
         }
     }
+
+    fn reject(&mut self) {
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.reject());
+        }
+    }
+
+    fn content(&self) -> &str {
+        self.state.as_ref().unwrap().get_contents(&self)
+    }
 }
 
 fn main() {
     let mut post = Post::new();
 
     post.add_text("Hello world!");
-    println!("{:?}", post);
+    println!("{:?}, conts: {}", post, post.content());
 
     post.request_review();
-    println!("{:?}", post);
+    println!("{:?}, conts: {}", post, post.content());
 
     post.approve();
-    println!("{:?}", post);
+    println!("{:?}, conts: {}", post, post.content());
+
+    post.reject();
+    println!("{:?}, conts: {}", post, post.content());
 }
