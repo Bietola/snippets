@@ -1,0 +1,1 @@
+{"rustc":13568843128949978479,"features":"[]","target":9077875612536490880,"profile":14996655781355331481,"path":1036222786711178230,"deps":[[9394155069736867423,"nalgebra",false,15623771305261109482]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/simple_matrix-2bc2dec9e285a763/dep-bin-simple_matrix-2bc2dec9e285a763"}}],"rustflags":[],"metadata":535147598578291627}

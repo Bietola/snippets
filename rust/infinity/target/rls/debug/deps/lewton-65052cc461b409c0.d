@@ -1,0 +1,13 @@
+/home/dincio/code/snippets/rust/infinity/target/rls/debug/deps/lewton-65052cc461b409c0.rmeta: /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/lib.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/header.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/header_cached.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/huffman_tree.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/imdct.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/audio.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/bitpacking.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/inside_ogg.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/samples.rs
+
+/home/dincio/code/snippets/rust/infinity/target/rls/debug/deps/lewton-65052cc461b409c0.d: /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/lib.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/header.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/header_cached.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/huffman_tree.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/imdct.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/audio.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/bitpacking.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/inside_ogg.rs /home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/samples.rs
+
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/lib.rs:
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/header.rs:
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/header_cached.rs:
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/huffman_tree.rs:
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/imdct.rs:
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/audio.rs:
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/bitpacking.rs:
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/inside_ogg.rs:
+/home/dincio/.cargo/registry/src/github.com-1ecc6299db9ec823/lewton-0.9.4/src/samples.rs:
