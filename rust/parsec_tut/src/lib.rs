@@ -159,15 +159,23 @@ pub fn any_char<'a>(input: &'a str) -> ParseResult<'a, char> {
     }
 }
 
-pub fn whitespace<'a>(input: &'a str) -> ParseResult<'a, char> {
+pub fn whitespace_char<'a>(input: &'a str) -> ParseResult<'a, char> {
     pred(any_char, |c| c.is_whitespace()).parse(input)
+}
+
+pub fn space1<'a>() -> impl Parser<'a, Vec<char>> {
+    one_or_more(whitespace_char)
+}
+
+pub fn space0<'a>() -> impl Parser<'a, Vec<char>> {
+    zero_or_more(whitespace_char)
 }
 
 pub fn xml_ele<'a>(input: &'a str) -> ParseResult<'a, Element> {
     // Support parsers. Their name indicate what they parse
     let attr_pair = pair(identifier, right(literal("="), identifier));
 
-    let attr_lst = zero_or_more(right(whitespace, attr_pair));
+    let attr_lst = zero_or_more(right(whitespace_char, attr_pair));
 
     let ele = right(literal("<"), pair(identifier, left(attr_lst, literal(">"))));
 
