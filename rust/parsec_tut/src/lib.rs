@@ -108,24 +108,15 @@ where
     move |mut input| {
         let mut result = Vec::new();
 
-        let mut num_parsed = 0;
-        loop {
-            match parser.parse(input) {
-                Ok((rest, single)) => {
-                    num_parsed += 1;
-                    input = rest;
-                    result.push(single);
-                }
-                Err(err) => {
-                    return {
-                        if num_parsed >= required_num {
-                            Ok((input, result))
-                        } else {
-                            Err(err)
-                        }
-                    }
-                }
-            }
+        while let Ok((rest, res)) = parser.parse(input) {
+            result.push(res);
+            input = rest;
+        }
+
+        if result.len() >= required_num {
+            Ok((input, result))
+        } else {
+            Err(input)
         }
     }
 }
