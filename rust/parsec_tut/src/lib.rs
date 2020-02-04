@@ -5,8 +5,8 @@ use regex::Regex;
 /* Parser XML element */
 /**********************/
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-struct Element {
+#[derive(Clone, Debug, PartialEq, Eq, Default)]
+pub struct Element {
     name: String,
     attributes: Vec<(String, String)>,
     children: Vec<Element>,
@@ -60,10 +60,7 @@ pub fn identifier(input: &str) -> ParseResult<String> {
     }
 }
 
-pub fn pair<'a, P1, P2, R1, R2>(
-    parser1: P1,
-    parser2: P2,
-) -> impl Parser<'a, (R1, R2)>
+pub fn pair<'a, P1, P2, R1, R2>(parser1: P1, parser2: P2) -> impl Parser<'a, (R1, R2)>
 where
     P1: Parser<'a, R1>,
     P2: Parser<'a, R2>,
@@ -80,7 +77,7 @@ where
 pub fn map<'a, P, F, A, B>(parser: P, fun: F) -> impl Parser<'a, B>
 where
     F: Fn(A) -> B,
-    P: Parser<'a, A>
+    P: Parser<'a, A>,
 {
     move |input| match parser.parse(input) {
         Ok((rest, res)) => Ok((rest, fun(res))),
@@ -104,24 +101,91 @@ where
     map(pair(parser1, parser2), |(lhs, _)| lhs)
 }
 
-pub fn zero_or_more<'a, P, A>(parser: P) -> impl Parser<'a, Vec<A>> 
+pub fn at_least<'a, P, A>(parser: P, required_num: usize) -> impl Parser<'a, Vec<A>>
 where
     P: Parser<'a, A>,
 {
-    move |input| {
+    move |mut input| {
         let mut result = Vec::new();
-        let mut remaining = input;
 
+        let mut num_parsed = 0;
         loop {
-            match parser.parse(remaining) {
+            match parser.parse(input) {
                 Ok((rest, single)) => {
-                    remaining = rest;
+                    num_parsed += 1;
+                    input = rest;
                     result.push(single);
                 }
-                Err(rest) => return Ok((rest, result)),
+                Err(err) => {
+                    return {
+                        if num_parsed >= required_num {
+                            Ok((input, result))
+                        } else {
+                            Err(err)
+                        }
+                    }
+                }
             }
         }
     }
+}
+
+pub fn zero_or_more<'a, P, A>(parser: P) -> impl Parser<'a, Vec<A>>
+where
+    P: Parser<'a, A>,
+{
+    at_least(parser, 0)
+}
+
+pub fn one_or_more<'a, P, A>(parser: P) -> impl Parser<'a, Vec<A>>
+where
+    P: Parser<'a, A>,
+{
+    at_least(parser, 1)
+}
+
+pub fn pred<'a, P, A, F>(parser: P, the_pred: F) -> impl Parser<'a, A>
+where
+    P: Parser<'a, A>,
+    F: Fn(&A) -> bool,
+{
+    move |input| match parser.parse(input) {
+        Ok((rest, res)) => {
+            if the_pred(&res) {
+                Ok((rest, res))
+            } else {
+                Err(input)
+            }
+        }
+        err @ Err(_) => err,
+    }
+}
+
+pub fn any_char<'a>(input: &'a str) -> ParseResult<'a, char> {
+    match input.chars().next() {
+        Some(c) => Ok((&input[c.len_utf8()..], c)),
+        None => Err(input),
+    }
+}
+
+pub fn whitespace<'a>(input: &'a str) -> ParseResult<'a, char> {
+    pred(any_char, |c| c.is_whitespace()).parse(input)
+}
+
+pub fn xml_ele<'a>(input: &'a str) -> ParseResult<'a, Element> {
+    // Support parsers. Their name indicate what they parse
+    let attr_pair = pair(identifier, right(literal("="), identifier));
+
+    let attr_lst = zero_or_more(right(whitespace, attr_pair));
+
+    let ele = right(literal("<"), pair(identifier, left(attr_lst, literal(">"))));
+
+    map(ele, |(name, attributes)| Element {
+        name,
+        attributes,
+        ..Default::default()
+    })
+    .parse(input)
 }
 
 #[test]
@@ -165,16 +229,59 @@ fn left_parser() {
 }
 
 #[test]
+fn at_least_parser() {
+    // At least three letters `a`.
+    let parse_letters_a = at_least(literal("a"), 3);
+
+    assert_eq!(
+        parse_letters_a.parse("aaaa"),
+        Ok(("", vec![(), (), (), ()])),
+    );
+
+    assert_eq!(parse_letters_a.parse("aaba"), Err("ba"),);
+}
+
+#[test]
 fn zero_or_more_letters_a() {
     let parse_letters_a = zero_or_more(literal("a"));
 
-    assert_eq!(
-        parse_letters_a.parse("aaa"),
-        Ok(("", vec![(), (), ()])),
-    );
+    assert_eq!(parse_letters_a.parse("aaa"), Ok(("", vec![(), (), ()])),);
 
+    assert_eq!(parse_letters_a.parse(""), Ok(("", vec![])),);
+}
+
+#[test]
+fn one_or_more_letters_a() {
+    let parse_letters_a = one_or_more(literal("a"));
+
+    assert_eq!(parse_letters_a.parse("aaba"), Ok(("ba", vec![(), ()])),);
+
+    assert_eq!(parse_letters_a.parse("ba"), Err("ba"));
+}
+
+#[test]
+fn any_char_parser() {
+    assert_eq!(any_char("hello"), Ok(("ello", 'h')));
+}
+
+#[test]
+fn predicate_combinator() {
+    let parser = pred(any_char, |c| *c == 'o');
+
+    assert_eq!(parser.parse("omg"), Ok(("mg", 'o')));
+}
+
+#[test]
+fn parse_element_with_attributes() {
     assert_eq!(
-        parse_letters_a.parse(""),
-        Ok(("", vec![])),
+        xml_ele(r#"<single-element attribute=value>"#),
+        Ok((
+            "",
+            Element {
+                name: "single-element".into(),
+                attributes: vec![("attribute".into(), "value".into())],
+                ..Default::default()
+            }
+        )),
     );
 }
