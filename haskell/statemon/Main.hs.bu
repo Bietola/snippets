@@ -1,0 +1,12 @@
+data Exp = Div Exp Exp | Con Integer
+  deriving (Show)
+
+type State = Integer
+
+eval :: Exp -> (Integer, State)
+eval = impl 0 
+  where impl :: State -> Exp -> (Integer, State)
+        impl s (Con x) = (x, s)
+        impl s (Div lhs rhs) = let (rres, s')  = impl s rhs
+                                   (lres, s'') = impl s' lhs
+                                in (quot rres lres, s'' + 1)
