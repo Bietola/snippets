@@ -1,2 +1,9 @@
-**/build
+// Vim
 **/*.swp
+
+// CMake (C/C++)
+**/build
+
+// Rust
+**/target
+**/*.rs.bk
